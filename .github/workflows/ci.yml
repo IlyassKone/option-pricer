@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Build package and C++ extension
+        # A uv-managed Python ships with the headers needed to compile C++
+        run: uv sync --managed-python
+
+      - name: Run tests
+        run: uv run pytest -v

@@ -19,28 +19,28 @@ def test_put_call_parity():
     assert call - put == pytest.approx(S * np.exp(-q * T) - K * np.exp(-r * T))
 
 
-    @pytest.mark.parametrize("option_type", ["call", "put"])
-    def test_greeks_match_finite_differences(option_type):
-        h = 1e-4
+@pytest.mark.parametrize("option_type", ["call", "put"])
+def test_greeks_match_finite_differences(option_type):
+    h = 1e-4
 
-        def f(**kw):
-            args = {**P, **kw}
-            return bs.price(**args, option_type=option_type)
+    def f(**kw):
+        args = {**P, **kw}
+        return bs.price(**args, option_type=option_type)
 
-        
-        S, sigma, r, T = P["S"], P["sigma"], P["r"], P["T"]
-        fd_delta = (f(S=S + h) - f(S=S - h)) / (2 * h)
-        fd_gamma = (f(S=S + h) - 2 * f() + f(S=S - h)) / h**2
-        fd_vega = (f(sigma=sigma + h) - f(sigma=sigma - h)) / (2 * h)
-        fd_rho = (f(r=r + h) - f(r=r - h)) / (2 * h)
-        # theta = dV/dt = -dV/dT
-        fd_theta = -(f(T=T + h) - f(T=T - h)) / (2 * h)
+    
+    S, sigma, r, T = P["S"], P["sigma"], P["r"], P["T"]
+    fd_delta = (f(S=S + h) - f(S=S - h)) / (2 * h)
+    fd_gamma = (f(S=S + h) - 2 * f() + f(S=S - h)) / h**2
+    fd_vega = (f(sigma=sigma + h) - f(sigma=sigma - h)) / (2 * h)
+    fd_rho = (f(r=r + h) - f(r=r - h)) / (2 * h)
+    # theta = dV/dt = -dV/dT
+    fd_theta = -(f(T=T + h) - f(T=T - h)) / (2 * h)
 
-        assert bs.delta(**P, option_type=option_type) == pytest.approx(fd_delta, rel=1e-5)
-        assert bs.gamma(**P) == pytest.approx(fd_gamma, rel=1e-3)
-        assert bs.vega(**P) == pytest.approx(fd_vega, rel=1e-5)
-        assert bs.rho(**P, option_type=option_type) == pytest.approx(fd_rho, rel=1e-5)
-        assert bs.theta(**P, option_type=option_type) == pytest.approx(fd_theta, rel=1e-5)
+    assert bs.delta(**P, option_type=option_type) == pytest.approx(fd_delta, rel=1e-5)
+    assert bs.gamma(**P) == pytest.approx(fd_gamma, rel=1e-3)
+    assert bs.vega(**P) == pytest.approx(fd_vega, rel=1e-5)
+    assert bs.rho(**P, option_type=option_type) == pytest.approx(fd_rho, rel=1e-5)
+    assert bs.theta(**P, option_type=option_type) == pytest.approx(fd_theta, rel=1e-5)
 
 
 @pytest.mark.parametrize("option_type", ["call", "put"])

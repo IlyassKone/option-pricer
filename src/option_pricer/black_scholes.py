@@ -50,7 +50,7 @@ def delta(S, K, T, r, sigma, q=0.0, option_type: OptionType = "call"):
     return df_q * (norm.cdf(d1) - 1.0)
 
 
-def gamma(S, K, r, sigma, q=0.0):
+def gamma(S, K, T, r, sigma, q=0.0):
     """Second derivative w.r.t. the spot (identical for calls and puts)"""
     d1, _ = _d1_d2(S, K, T, r, sigma, q)
     return np.exp(-q * T) * norm.pdf(d1) / (S * sigma * np.sqrt(T))
@@ -70,7 +70,7 @@ def theta(S, K, T, r, sigma, q=0.0, option_type: OptionType = "call"):
     decay = -S * df_q * norm.pdf(d1) * sigma / (2 * np.sqrt(T))
     if option_type == "call":
         return decay - r * K * df_r * norm.cdf(d2) + q * S * df_q * norm.cdf(d1)
-    return dcay +r * K * df_r * norm.cdf(-d2) - q * S * df_q * norm.cdf(-d1)
+    return decay +r * K * df_r * norm.cdf(-d2) - q * S * df_q * norm.cdf(-d1)
 
 
 def rho(S, K, T, r, sigma, q=0.0, option_type: OptionType = "call"):
